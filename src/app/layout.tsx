@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Montserrat } from "next/font/google";
 import "./globals.css";
 import clsx from "clsx";
+import Link from "next/link";
 
 const montserrat = Montserrat({ subsets: ["latin"] });
 
@@ -20,10 +21,20 @@ export default function RootLayout({
       <body
         className={clsx(
           montserrat.className,
-          "bg-gradient-to-br from-green-300 to-green-200"
+          "min-h-screen flex  flex-col bg-gradient-to-br from-green-200 to-green-100"
         )}
       >
+        <header className=" bg-gradient-to-tl border-b   text-white from-slate-700 to-slate-800 flex justify-center  p-4">
+          <div className="max-w-screen-xl grow flex">
+            <Link href="/" className="font-medium">
+              Home
+            </Link>
+          </div>
+        </header>
         {children}
+        <footer className="mt-auto flex justify-center  bg-gradient-to-bl from-slate-700 to-slate-800 text-white p-4">
+          <div className="max-w-screen-xl grow">Footer</div>
+        </footer>
       </body>
     </html>
   );
