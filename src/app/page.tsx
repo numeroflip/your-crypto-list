@@ -1,25 +1,26 @@
 import { Suspense } from "react";
 import TokenList from "./components/TokenList";
+import SearchBar from "./components/SearchBar";
 
-export default async function Home() {
+type Props = {
+  searchParams?: {
+    search?: string;
+  };
+};
+
+export default async function Home({ searchParams }: Props) {
   return (
     <>
-      <main className="flex max-w-screen-xl self-center  flex-col items-center gap-8 px-2 pt-10">
-        <h1 className="text-3xl font-semibold">Tokens</h1>
-        <div className="flex flex-col">
-          <label htmlFor="search" className="sr-only">
-            Search
-          </label>
-          <input
-            type="text"
-            className="rounded-full bg-white/80 shadow-md px-4 py-2 "
-            placeholder="search"
-            name="search"
-            id="search"
-          />
+      <main className="flex max-w-screen-xl self-center  flex-col items-center gap-8 px-2  pb-20 py-10">
+        <h1 className="text-3xl my-10 font-semibold">Choose a Token</h1>
+        <div className="flex flex-col mb-10">
+          <Suspense fallback={<div>Loading...</div>}>
+            <SearchBar />
+          </Suspense>
         </div>
+
         <Suspense fallback={<div>Loading...</div>}>
-          <TokenList />
+          <TokenList query={searchParams?.search} />
         </Suspense>
       </main>
     </>

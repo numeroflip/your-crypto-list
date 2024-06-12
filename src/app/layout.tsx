@@ -2,10 +2,9 @@ import type { Metadata } from "next";
 import { Montserrat } from "next/font/google";
 import "./globals.css";
 import clsx from "clsx";
-import Link from "next/link";
-import { CREATOR_GITHUB_LINK, SITE_NAME } from "@/config";
 import Header from "./components/Header";
 import Footer from "./components/Footer";
+import { ReactNode } from "react";
 
 const montserrat = Montserrat({ subsets: ["latin"] });
 
@@ -17,7 +16,7 @@ export const metadata: Metadata = {
 export default function RootLayout({
   children,
 }: Readonly<{
-  children: React.ReactNode;
+  children: ReactNode;
 }>) {
   return (
     <html lang="en">
