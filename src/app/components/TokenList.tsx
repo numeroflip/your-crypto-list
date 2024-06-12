@@ -3,30 +3,38 @@ import { withErrorData } from "@/lib/utils/withErrorData";
 
 import Image from "next/image";
 import Link from "next/link";
+import Pagination from "./Pagination";
 
 type Props = {
   query?: string;
+  page?: number;
 };
 
-export default async function TokenList({ query }: Props) {
-  const { isError, data: tokenList } = await withErrorData(
-    fetchTokens({ query })
+export default async function TokenList({ query, page }: Props) {
+  const {
+    isError,
+    error,
+    data: paginatedTokens,
+  } = await withErrorData(
+    fetchTokens({ query, page }, { next: { revalidate: 20 } })
   );
 
-  console.info("TokenList, query", query);
   if (isError) {
     // TODO: handle error
+    console.error(error);
     return <>Opps, an error occured</>;
   }
 
   return (
     <>
-      <ul className="grid grid-cols-5 gap-4  w-full">
-        {tokenList.map((token) => (
+      <div className="h-[4px] rounded-md shadow-md bg-white w-full" />
+
+      <ul className="grid grid-cols-1 xs:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4  w-full">
+        {paginatedTokens.items.map((token) => (
           <li key={`${token.chainId}-${token.address}`}>
             <Link
               href={`/token/${token.chainId}-${token.address}`}
-              className="flex h-full bg-white/70 shadow-md rounded-xl py-4 gap-4 px-4 items-center hover:shadow-lg hover:bg-white/85 transition-all"
+              className="flex h-full overflow-hidden bg-white/70 shadow-md rounded-xl py-4 gap-4 px-4 items-center hover:shadow-lg hover:bg-white/85 transition-all"
             >
               <div className="aspect-square shrink-0">
                 {token.logoURI ? (
@@ -45,7 +53,7 @@ export default async function TokenList({ query }: Props) {
               </div>
 
               <div className="flex flex-col gap-1">
-                <div className="font-medium">{token.name}</div>
+                <div className="font-medium text-ellipsis">{token.name}</div>
                 <div className="text-[10px] text-wrap break-all text-slate-500">
                   {token.address}
                 </div>
@@ -54,6 +62,11 @@ export default async function TokenList({ query }: Props) {
           </li>
         ))}
       </ul>
+      <div className="h-[4px] rounded-md shadow-md bg-white w-full" />
+      <Pagination
+        pageCount={paginatedTokens.total}
+        currentPage={paginatedTokens.currentPage}
+      />
     </>
   );
 }

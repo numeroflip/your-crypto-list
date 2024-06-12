@@ -3,18 +3,18 @@
 import React, { useCallback, useEffect, useState } from "react";
 
 import { useDebounce } from "use-debounce";
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
+import { useSetQueryParameter } from "@/lib/hooks/useSetQueryParam";
 
 const DEBOUNCE_MILLISECONDS = 300;
 
 const SearchBar = () => {
-  const router = useRouter();
-  const pathname = usePathname();
-
   const searchParams = useSearchParams();
   const search = searchParams.get("search");
 
   const [inputValue, setInputValue] = useState(search || "");
+
+  const { setQueryParameters } = useSetQueryParameter();
 
   const handleSearch = (event: React.ChangeEvent<HTMLInputElement>) => {
     setInputValue(event.target.value);
@@ -22,18 +22,11 @@ const SearchBar = () => {
 
   const [debouncedInput] = useDebounce(inputValue, DEBOUNCE_MILLISECONDS);
 
-  const createQueryString = useCallback(
-    (name: string, value: string) => {
-      const params = new URLSearchParams(searchParams.toString());
-      params.set(name, value);
-
-      return params.toString();
-    },
-    [searchParams]
-  );
-
   useEffect(() => {
-    router.push(pathname + "?" + createQueryString("search", debouncedInput));
+    setQueryParameters([
+      { name: "search", value: debouncedInput },
+      { name: "page", value: "1" },
+    ]);
   }, [debouncedInput]);
 
   return (
