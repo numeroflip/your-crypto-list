@@ -21,6 +21,7 @@ export async function fetchTokens(
   const response = await appFetch(URL, fetchOptions);
 
   const validatedResponse = tokenListSchema.parse(response);
+
   const tokens = Object.values(validatedResponse.tokens).flat();
 
   let results: ITokenCore[] = tokens;

@@ -3,7 +3,7 @@ import Link from "next/link";
 
 export default function Header() {
   return (
-    <header className=" bg-gradient-to-tl border-b   text-white from-slate-700 to-slate-800 flex justify-center  p-4">
+    <header className=" bg-gradient-to-tl border-b   text-white from-slate-700 to-slate-800 flex justify-center  px-4 py-5">
       <div className="max-w-screen-xl items-center grow flex">
         <Link href="/" className="font-medium ">
           {SITE_NAME}

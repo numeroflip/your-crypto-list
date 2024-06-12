@@ -12,6 +12,7 @@ export function useSetQueryParameter() {
 
   const getUpdatedQueryParameters = useCallback(
     (name: string, value: string) => {
+      if (typeof window === "undefined") return "";
       const params = new URL(window.location.href).searchParams;
       params.set(name, value);
 
@@ -29,6 +30,8 @@ export function useSetQueryParameter() {
 
   const setQueryParameters = useCallback(
     (parameters: QueryParameter[]) => {
+      if (typeof window === "undefined") return "";
+
       const params = new URL(window.location.href).searchParams;
 
       parameters.forEach(({ name, value }) => {

@@ -2,12 +2,18 @@ import { Suspense } from "react";
 import TokenList, { TokenListSkeleton } from "./components/TokenList";
 import SearchBar, { UncontrolledSearchBar } from "./components/SearchBar";
 import { TOKEN_ITEMS_PER_PAGE } from "@/lib/services/lifiApi/tokens";
+import { Metadata } from "next";
 
 type Props = {
   searchParams?: {
     search?: string;
     page?: string;
   };
+};
+
+export const metadata: Metadata = {
+  title: "Token List",
+  description: "Browse crypto tokens and learn more about them",
 };
 
 export default async function Home({ searchParams }: Props) {

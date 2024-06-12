@@ -51,8 +51,8 @@ export const UncontrolledSearchBar = ({ onChange, value }: Props) => {
         onChange={onChange}
         value={value || ""}
         type="text"
-        className="rounded-full bg-white/80 shadow-md px-4 py-2 "
-        placeholder="search"
+        className="rounded-full bg-white/80 shadow-md px-5 py-3 "
+        placeholder="Search"
         name="search"
         id="search"
       />

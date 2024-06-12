@@ -31,6 +31,7 @@ export default async function TokenList({ query, page }: Props) {
         {paginatedTokens.items.map((token) => (
           <li key={`${token.chainId}-${token.address}`}>
             <Link
+              prefetch={false} // So we don't fire a huge amount of fetch requests for the associated pages when they enter the viewport
               href={`/token/${token.chainId}-${token.address}`}
               className="flex h-full min-h-24 overflow-hidden bg-white/70 shadow-md rounded-xl py-4 gap-4 px-4 items-center hover:shadow-lg hover:bg-white/85 transition-all"
             >
