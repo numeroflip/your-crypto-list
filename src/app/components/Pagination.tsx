@@ -3,7 +3,6 @@
 import { useSetQueryParameter } from "@/lib/hooks/useSetQueryParam";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useCallback } from "react";
 
 type Props = {
   currentPage: number;

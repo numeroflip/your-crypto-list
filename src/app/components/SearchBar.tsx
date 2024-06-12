@@ -29,7 +29,7 @@ const SearchBar = () => {
       { name: "search", value: debouncedInput || "" },
       { name: "page", value: "1" },
     ]);
-  }, [debouncedInput]);
+  }, [debouncedInput, setQueryParameters]);
 
   return (
     <UncontrolledSearchBar onChange={handleSearch} value={inputValue || ""} />

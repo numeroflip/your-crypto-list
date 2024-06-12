@@ -1,4 +1,4 @@
-import { usePathname, useSearchParams, useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useCallback } from "react";
 
 type QueryParameter = { name: string; value: string }; // [parameter. value]
@@ -9,28 +9,27 @@ type QueryParameter = { name: string; value: string }; // [parameter. value]
 export function useSetQueryParameter() {
   const router = useRouter();
   const pathname = usePathname();
-  const searchParams = useSearchParams();
 
   const getUpdatedQueryParameters = useCallback(
     (name: string, value: string) => {
-      const params = new URLSearchParams(searchParams.toString());
+      const params = new URL(window.location.href).searchParams;
       params.set(name, value);
 
       return params.toString();
     },
-    [searchParams]
+    []
   );
 
   const setQueryParameter = useCallback(
     (name: string, value: string) => {
       router.push(pathname + "?" + getUpdatedQueryParameters(name, value));
     },
-    [searchParams]
+    [router, pathname, getUpdatedQueryParameters]
   );
 
   const setQueryParameters = useCallback(
     (parameters: QueryParameter[]) => {
-      const params = new URLSearchParams(searchParams.toString());
+      const params = new URL(window.location.href).searchParams;
 
       parameters.forEach(({ name, value }) => {
         params.set(name, value);
@@ -40,7 +39,7 @@ export function useSetQueryParameter() {
       router.push(pathname + "?" + newParams);
     },
 
-    [searchParams]
+    [pathname, router]
   );
 
   return { setQueryParameter, setQueryParameters, getUpdatedQueryParameters };
