@@ -1,4 +1,4 @@
-import { fetchTokens } from "@/lib/services/lifiApi/tokens";
+import { getTokens } from "@/lib/services/lifiApi/tokens";
 import { withErrorData } from "@/lib/utils/withErrorData";
 
 import Image from "next/image";
@@ -15,9 +15,7 @@ export default async function TokenList({ query, page }: Props) {
     isError,
     error,
     data: paginatedTokens,
-  } = await withErrorData(
-    fetchTokens({ query, page }, { next: { revalidate: 20 } })
-  );
+  } = await withErrorData(getTokens({ query, page }));
 
   if (isError) {
     // TODO: handle error
