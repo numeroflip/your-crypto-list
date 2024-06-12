@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 
 import { useDebounce } from "use-debounce";
 import { useSearchParams } from "next/navigation";
@@ -12,8 +12,7 @@ const SearchBar = () => {
   const searchParams = useSearchParams();
   const search = searchParams.get("search");
 
-  const [inputValue, setInputValue] = useState(search || "");
-
+  const [inputValue, setInputValue] = useState(search || null);
   const { setQueryParameters } = useSetQueryParameter();
 
   const handleSearch = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -23,20 +22,34 @@ const SearchBar = () => {
   const [debouncedInput] = useDebounce(inputValue, DEBOUNCE_MILLISECONDS);
 
   useEffect(() => {
+    if (debouncedInput === null) {
+      return;
+    }
     setQueryParameters([
-      { name: "search", value: debouncedInput },
+      { name: "search", value: debouncedInput || "" },
       { name: "page", value: "1" },
     ]);
   }, [debouncedInput]);
 
+  return (
+    <UncontrolledSearchBar onChange={handleSearch} value={inputValue || ""} />
+  );
+};
+
+type Props = {
+  onChange?: (event: React.ChangeEvent<HTMLInputElement>) => void;
+  value?: string;
+};
+
+export const UncontrolledSearchBar = ({ onChange, value }: Props) => {
   return (
     <div>
       <label htmlFor="search" className="sr-only">
         Search
       </label>
       <input
-        onChange={handleSearch}
-        value={inputValue}
+        onChange={onChange}
+        value={value || ""}
         type="text"
         className="rounded-full bg-white/80 shadow-md px-4 py-2 "
         placeholder="search"

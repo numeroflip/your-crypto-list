@@ -27,14 +27,12 @@ export default async function TokenList({ query, page }: Props) {
 
   return (
     <>
-      <div className="h-[4px] rounded-md shadow-md bg-white w-full" />
-
       <ul className="grid grid-cols-1 xs:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4  w-full">
         {paginatedTokens.items.map((token) => (
           <li key={`${token.chainId}-${token.address}`}>
             <Link
               href={`/token/${token.chainId}-${token.address}`}
-              className="flex h-full overflow-hidden bg-white/70 shadow-md rounded-xl py-4 gap-4 px-4 items-center hover:shadow-lg hover:bg-white/85 transition-all"
+              className="flex h-full min-h-24 overflow-hidden bg-white/70 shadow-md rounded-xl py-4 gap-4 px-4 items-center hover:shadow-lg hover:bg-white/85 transition-all"
             >
               <div className="aspect-square shrink-0">
                 {token.logoURI ? (
@@ -70,3 +68,16 @@ export default async function TokenList({ query, page }: Props) {
     </>
   );
 }
+
+type SkeletonProps = {
+  itemCount: number;
+};
+export const TokenListSkeleton = ({ itemCount }: SkeletonProps) => {
+  return (
+    <div className="grid  grid-cols-1 xs:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4  w-full">
+      {new Array(itemCount).fill(0).map((_, index) => (
+        <div className="w-full h-24 rounded-md shadow-md bg-white/80 animate-pulse"></div>
+      ))}
+    </div>
+  );
+};

@@ -1,8 +1,9 @@
 "use client";
 
 import { useSetQueryParameter } from "@/lib/hooks/useSetQueryParam";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { useCallback } from "react";
-import { useSearchParams } from "next/navigation";
 
 type Props = {
   currentPage: number;
@@ -10,32 +11,43 @@ type Props = {
 };
 
 export default function Pagination({ currentPage, pageCount }: Props) {
-  const { setQueryParameter } = useSetQueryParameter();
-  const setPage = useCallback(
-    (page: number) => {
-      setQueryParameter("page", String(page));
-    },
-    [setQueryParameter]
-  );
+  const pathName = usePathname();
+  const { getUpdatedQueryParameters } = useSetQueryParameter();
+
+  const hasNextPage = currentPage < pageCount;
+  const hasPrevPage = currentPage > 1;
+  const nextPageLink = `${pathName}?${getUpdatedQueryParameters(
+    "page",
+    String(currentPage + 1)
+  )}`;
+  const prevPageLink = `${pathName}?${getUpdatedQueryParameters(
+    "page",
+    String(currentPage - 1)
+  )}`;
 
   return (
     <div className="flex flex-col gap-3 items-center justify-center">
-      Page {currentPage} of {pageCount}
       <div className="flex">
-        {currentPage > 1 && (
-          <button
-            className="bg-white/60 hover:bg-white transition-all rounded-full shadow-md px-4 py-2  m-2 block"
-            onClick={() => setPage(currentPage - 1)}
+        {hasPrevPage && (
+          <Link
+            href={prevPageLink}
+            className="bg-white/60 hover:bg-white text-sm sm:text-base transition-all rounded-full shadow-md px-4 py-2  m-2 block"
           >
             Previous Page
-          </button>
+          </Link>
         )}
-        <button
-          className="bg-white/60 hover:bg-white transition-all rounded-full shadow-md px-4 py-2  m-2 block"
-          onClick={() => setPage(currentPage + 1)}
-        >
-          Next Page
-        </button>
+        {hasNextPage && (
+          <Link
+            prefetch
+            href={nextPageLink}
+            className="bg-white/60 hover:bg-white text-sm sm:text-base transition-all rounded-full shadow-md px-4 py-2  m-2 block"
+          >
+            Next Page
+          </Link>
+        )}
+      </div>
+      <div className="text-sm text-slate-400">
+        Page {currentPage} of {pageCount}
       </div>
     </div>
   );

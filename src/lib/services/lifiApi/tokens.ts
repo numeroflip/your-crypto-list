@@ -7,7 +7,7 @@ const URL = "https://li.quest/v1/tokens";
 
 const DESKTOP_ROW_COUNT = 4;
 
-const ITEMS_PER_PAGE = DESKTOP_ROW_COUNT * 15;
+export const TOKEN_ITEMS_PER_PAGE = DESKTOP_ROW_COUNT * 10;
 
 interface Options {
   query?: string;
@@ -35,12 +35,14 @@ export async function fetchTokens(
 
     results = searchResult.map((result) => result.item);
   }
+
   // Paginate
-  return paginate({
+  const paginatedResults = paginate({
     array: results,
     pageNumber: page || 1,
-    pageSize: ITEMS_PER_PAGE,
+    pageSize: TOKEN_ITEMS_PER_PAGE,
   });
+  return paginatedResults;
 }
 
 const tokenListSchema = z.object({
