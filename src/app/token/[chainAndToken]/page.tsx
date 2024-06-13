@@ -1,7 +1,6 @@
 import { getChain } from "@/lib/services/lifiApi/chains";
 import { fetchToken } from "@/lib/services/lifiApi/token";
 import { formatPrice } from "@/lib/utils/numberUtils";
-import { withErrorData } from "@/lib/utils/withErrorData";
 import clsx from "clsx";
 import { Metadata } from "next";
 import { notFound } from "next/navigation";
@@ -21,16 +20,23 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 
 export default async function Token({ params }: Props) {
-  const [chain, token] = params.chainAndToken.split("-");
+  const [chainId, tokenAddress] = params.chainAndToken.split("-");
 
-  const chainData = await getChain(chain);
+  const [tokenData, chainData] = await Promise.allSettled([
+    fetchToken(
+      { chain: chainId, token: tokenAddress },
+      { next: { revalidate: 20 } }
+    ),
+    getChain(chainId),
+  ]);
 
-  const { isError, error, data } = await withErrorData(
-    fetchToken({ chain, token }, { next: { revalidate: 20 } })
-  );
+  const chain = chainData.status === "fulfilled" ? chainData.value : null;
+  const token = tokenData.status === "fulfilled" ? tokenData.value : null;
 
-  if (isError) {
-    console.error(error);
+  if (tokenData.status === "rejected") {
+    throw tokenData.reason;
+  }
+  if (!token) {
     notFound();
   }
 
@@ -46,16 +52,16 @@ export default async function Token({ params }: Props) {
           )}
         >
           <h1 className="flex col-span-2 gap-4 text-3xl items-center grow">
-            {data.logoURI && (
-              <img alt="logo" className="size-14 " src={data.logoURI} />
+            {token.logoURI && (
+              <img alt="logo" className="size-14 " src={token.logoURI} />
             )}
-            <div>{data.name}</div>
+            <div>{token.name}</div>
           </h1>
           <div className="text-slate-600  self-end ml-2 font-semibold ">
-            {data.symbol}
+            {token.symbol}
           </div>
           <div className="text-green-600 justify-self-end font-bold text-3xl">
-            {formatPrice(Number(data.priceUSD))}
+            {formatPrice(Number(token.priceUSD))}
           </div>
         </div>
         <dl
@@ -67,12 +73,12 @@ export default async function Token({ params }: Props) {
           <h2 className="col-span-2 text-2xl font-semibold">Details</h2>
 
           <dt>Address:</dt>
-          <dd className="break-all">{data.address}</dd>
+          <dd className="break-all">{token.address}</dd>
 
           <dt>Key:</dt>
-          <dd>{data.coinKey}</dd>
+          <dd>{token.coinKey}</dd>
         </dl>
-        {chainData && (
+        {chain && (
           <dl
             className={clsx(
               containerClasses,
@@ -83,20 +89,23 @@ export default async function Token({ params }: Props) {
             <dt>Name</dt>
 
             <dd className="flex gap-2 items-center">
-              {" "}
-              <img
-                alt="chain logo"
-                className="size-14 "
-                src={chainData?.logoURI || ""}
-              />{" "}
-              {chainData?.name}
+              {chain?.logoURI && (
+                <>
+                  <img
+                    alt="chain logo"
+                    className="size-14 "
+                    src={chain.logoURI}
+                  />{" "}
+                </>
+              )}
+              {chain.name}
             </dd>
 
             <dt>Mainnet: </dt>
-            <dd className="text-xl">{chainData.mainnet ? "✅" : "❌"} </dd>
+            <dd className="text-xl">{chain.mainnet ? "✅" : "❌"} </dd>
 
             <dt>Coin: </dt>
-            <dd className="text-xl">{chainData.coin} </dd>
+            <dd className="text-xl">{chain.coin} </dd>
           </dl>
         )}
       </div>

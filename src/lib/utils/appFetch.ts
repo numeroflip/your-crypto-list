@@ -1,3 +1,5 @@
+import { notFound } from "next/navigation";
+
 const DEFAULT_OPTIONS: RequestInit = {
   method: "GET",
   headers: { accept: "application/json" },
@@ -24,6 +26,9 @@ export async function appFetch(
   }
   const response = await fetch(url, fetchOptions);
   if (!response.ok) {
+    if (response.status === 404) {
+      notFound();
+    }
     throw new Error(`Fetch failed. response code: ${response.status}`);
   }
   return response.json();

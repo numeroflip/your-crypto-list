@@ -1,5 +1,4 @@
 import { getTokens } from "@/lib/services/lifiApi/tokens";
-import { withErrorData } from "@/lib/utils/withErrorData";
 
 import Image from "next/image";
 import Link from "next/link";
@@ -12,17 +11,7 @@ type Props = {
 };
 
 export default async function TokenList({ query, page }: Props) {
-  const {
-    isError,
-    error,
-    data: paginatedTokens,
-  } = await withErrorData(getTokens({ query, page }));
-
-  if (isError) {
-    // TODO: handle error
-    console.error(error);
-    return <>Opps, an error occured</>;
-  }
+  const paginatedTokens = await getTokens({ query, page });
 
   return (
     <>
