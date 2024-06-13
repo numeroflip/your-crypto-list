@@ -1,7 +1,7 @@
 const DEFAULT_OPTIONS: RequestInit = {
   method: "GET",
   headers: { accept: "application/json" },
-  cache: "no-cache",
+  cache: "no-store",
 };
 
 /**
@@ -23,7 +23,6 @@ export async function appFetch(
     delete fetchOptions.cache; // only next.revalidate OR cache should be set, not both
   }
   const response = await fetch(url, fetchOptions);
-
   if (!response.ok) {
     throw new Error(`Fetch failed. response code: ${response.status}`);
   }

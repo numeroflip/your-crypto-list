@@ -1,3 +1,4 @@
+import { getChain } from "@/lib/services/lifiApi/chains";
 import { fetchToken } from "@/lib/services/lifiApi/token";
 import { formatPrice } from "@/lib/utils/numberUtils";
 import { withErrorData } from "@/lib/utils/withErrorData";
@@ -14,7 +15,6 @@ export const dynamic = "force-static"; // Ensures ISR (if a fetch uses revalidat
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const [chain, token] = params.chainAndToken.split("-");
   const data = await fetchToken({ chain, token }, { next: { revalidate: 20 } });
-
   return {
     title: data?.name ? `${data.name} Details` : "Token Details",
   };
@@ -22,6 +22,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default async function Token({ params }: Props) {
   const [chain, token] = params.chainAndToken.split("-");
+
+  const chainData = await getChain(chain);
 
   const { isError, error, data } = await withErrorData(
     fetchToken({ chain, token }, { next: { revalidate: 20 } })
@@ -35,54 +37,69 @@ export default async function Token({ params }: Props) {
   const containerClasses = clsx("bg-white/80  w-full p-5 rounded-lg shadow-lg");
 
   return (
-    <div className="flex max-w-screen-sm self-center w-full flex-col items-center justify-start grow   pt-10">
-      <div
-        className={clsx(
-          containerClasses,
-          "grid grid-cols-[auto_1fr] mb-10 font-semibold "
-        )}
-      >
-        <h1 className="flex col-span-2 gap-4 text-3xl items-center grow">
-          {data.logoURI && (
-            <img alt="logo" className="size-14 " src={data.logoURI} />
+    <main className="flex px-3 max-w-screen-sm self-center w-full flex-col items-center justify-start grow gap-5   pt-10">
+      <div className="grid w-full grid-cols-[auto_1fr] gap-5">
+        <div
+          className={clsx(
+            containerClasses,
+            "grid grid-cols-subgrid col-span-2 font-semibold "
           )}
-          <div>{data.name}</div>
-        </h1>
-        <div className="text-slate-600  self-end ml-2 font-semibold ">
-          {data.symbol}
+        >
+          <h1 className="flex col-span-2 gap-4 text-3xl items-center grow">
+            {data.logoURI && (
+              <img alt="logo" className="size-14 " src={data.logoURI} />
+            )}
+            <div>{data.name}</div>
+          </h1>
+          <div className="text-slate-600  self-end ml-2 font-semibold ">
+            {data.symbol}
+          </div>
+          <div className="text-green-600 justify-self-end font-bold text-3xl">
+            {formatPrice(Number(data.priceUSD))}
+          </div>
         </div>
-        <div className="text-green-600 justify-self-end font-bold text-3xl">
-          {formatPrice(Number(data.priceUSD))}
-        </div>
-      </div>
+        <dl
+          className={clsx(
+            containerClasses,
+            "grid col-span-2  grid-cols-subgrid  items-center gap-10  "
+          )}
+        >
+          <h2 className="col-span-2 text-2xl font-semibold">Details</h2>
 
-      <div
-        className={clsx(
-          containerClasses,
-          "flex justify-between mb-3 items-center gap-10  "
+          <dt>Address:</dt>
+          <dd className="break-all">{data.address}</dd>
+
+          <dt>Key:</dt>
+          <dd>{data.coinKey}</dd>
+        </dl>
+        {chainData && (
+          <dl
+            className={clsx(
+              containerClasses,
+              "grid  col-span-2 grid-cols-subgrid mb-3 items-center gap-10  "
+            )}
+          >
+            <h2 className="col-span-2 text-2xl font-semibold">Chain</h2>
+            <dt>Name</dt>
+
+            <dd className="flex gap-2 items-center">
+              {" "}
+              <img
+                alt="chain logo"
+                className="size-14 "
+                src={chainData?.logoURI || ""}
+              />{" "}
+              {chainData?.name}
+            </dd>
+
+            <dt>Mainnet: </dt>
+            <dd className="text-xl">{chainData.mainnet ? "✅" : "❌"} </dd>
+
+            <dt>Coin: </dt>
+            <dd className="text-xl">{chainData.coin} </dd>
+          </dl>
         )}
-      >
-        <div>Address</div>
-        <div className="break-all">{data.address}</div>
       </div>
-      <div
-        className={clsx(
-          containerClasses,
-          "flex justify-between mb-3 items-center gap-10  "
-        )}
-      >
-        <div>Chain ID:</div>
-        <div>{data.chainId}</div>
-      </div>
-      <div
-        className={clsx(
-          containerClasses,
-          "flex justify-between mb-3 items-center gap-10  "
-        )}
-      >
-        <div>CoinKey</div>
-        <div>{data.coinKey}</div>
-      </div>
-    </div>
+    </main>
   );
 }

@@ -3,6 +3,7 @@
 import { useSetQueryParameter } from "@/lib/hooks/useSetQueryParam";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useEffect, useState } from "react";
 
 type Props = {
   currentPage: number;
@@ -13,16 +14,26 @@ export default function Pagination({ currentPage, pageCount }: Props) {
   const pathName = usePathname();
   const { getUpdatedQueryParameters } = useSetQueryParameter();
 
+  const [isClient, setIsClient] = useState(false);
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
+
   const hasNextPage = currentPage < pageCount;
   const hasPrevPage = currentPage > 1;
-  const nextPageLink = `${pathName}?${getUpdatedQueryParameters(
-    "page",
-    String(currentPage + 1)
-  )}`;
-  const prevPageLink = `${pathName}?${getUpdatedQueryParameters(
-    "page",
-    String(currentPage - 1)
-  )}`;
+
+  const nextPageLink = isClient
+    ? `${pathName}?${getUpdatedQueryParameters(
+        "page",
+        String(currentPage + 1)
+      )}`
+    : "";
+  const prevPageLink = isClient
+    ? `${pathName}?${getUpdatedQueryParameters(
+        "page",
+        String(currentPage - 1)
+      )}`
+    : "";
 
   return (
     <div className="flex flex-col gap-3 items-center justify-center">

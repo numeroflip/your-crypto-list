@@ -4,6 +4,7 @@ import { withErrorData } from "@/lib/utils/withErrorData";
 import Image from "next/image";
 import Link from "next/link";
 import Pagination from "./Pagination";
+import { Skeleton } from "./Skeleton";
 
 type Props = {
   query?: string;
@@ -75,10 +76,7 @@ export const TokenListSkeleton = ({ itemCount }: SkeletonProps) => {
   return (
     <div className="grid  grid-cols-1 xs:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4  w-full">
       {new Array(itemCount).fill(0).map((_, index) => (
-        <div
-          key={index}
-          className="w-full h-24 rounded-md shadow-md bg-white/80 animate-pulse"
-        ></div>
+        <Skeleton key={index} className="w-full h-24" />
       ))}
     </div>
   );
