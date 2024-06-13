@@ -1,4 +1,5 @@
 import { z } from "zod";
+import "server-only";
 import { ITokenCore, TokenCore } from "./model";
 import { appFetch } from "@/lib/utils/appFetch";
 import Fuse from "fuse.js";

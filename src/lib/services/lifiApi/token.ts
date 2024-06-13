@@ -1,6 +1,5 @@
 import { IToken, Token } from "./model";
 import { appFetch } from "@/lib/utils/appFetch";
-
 const URL = "https://li.quest/v1/token";
 
 type Options = {

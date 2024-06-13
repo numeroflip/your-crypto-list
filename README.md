@@ -57,3 +57,9 @@ Since the overall list of tokens on the overview page is extremely long, we will
 #### Token detail page
 
 It's ISR rendered. A static page, which get's revalidated after a given time.
+
+ISR here has a noticable con, that the very first page load is relatively slow (since the pages are not prebuilt).
+To remedy that it might be worth considering to change it to dynamic rendering, where the server sends the data for each user, so we can stream a loading UI.
+This would make page transitions appear faster.
+
+Either that, or prebuild a limited selection of the most popular tokens, so they are faster initially. Currently the API won't allow that, since it sends a "Too Many Request" error when attempting to pregenerate multiple token detail pages.
