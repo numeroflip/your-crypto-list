@@ -23,7 +23,7 @@ export default function RootLayout({
       <body
         className={clsx(
           montserrat.className,
-          "min-h-screen flex  flex-col bg-gradient-to-br from-green-200 to-green-100"
+          "min-h-screen flex  flex-col bg-gradient-to-br from-yellow-200 to-yellow-50"
         )}
       >
         <Header />

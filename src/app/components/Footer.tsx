@@ -1,4 +1,4 @@
-import { CREATOR_GITHUB_LINK } from "@/config";
+import { CREATOR_GITHUB_LINK, CREATOR_GITHUB_NAME } from "@/config";
 import Link from "next/link";
 
 export default function Footer() {
@@ -10,7 +10,7 @@ export default function Footer() {
           className="text-green-300 hover:underline"
           href={CREATOR_GITHUB_LINK}
         >
-          numeroflip
+          {CREATOR_GITHUB_NAME}
         </Link>
       </div>
     </footer>
