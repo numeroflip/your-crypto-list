@@ -56,7 +56,7 @@ export default async function Token({ params }: Props) {
             )}
             <div>{token.name}</div>
             <div className="ml-auto relative -top-2">
-              <FavoriteIcon chainId={Number(chainId)} address={tokenAddress} />
+              <FavoriteIcon token={token} />
             </div>
           </h1>
           <div className="text-slate-600  self-end ml-2 font-semibold ">

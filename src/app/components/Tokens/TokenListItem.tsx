@@ -36,11 +36,7 @@ export default function TokenListItem({ token }: Props) {
           {token.name}
           <div className="ml-auto relative -top-2">
             {" "}
-            <FavoriteIcon
-              chainId={token.chainId}
-              address={token.address}
-              isFavorite={token?.isFavorite}
-            />
+            <FavoriteIcon token={token} isFavorite={token?.isFavorite} />
           </div>
         </div>
         <div className="text-[10px] text-wrap break-all text-slate-500">

@@ -1,14 +1,14 @@
 "use client";
-import { MouseEvent, useOptimistic, useTransition } from "react";
-import {
-  getFavoriteTokensFromClientCookie,
-  toggleFavoriteTokensFromClient,
-} from "@/lib/services/favoriteTokenCookies/client";
+import { MouseEvent, useMemo } from "react";
 import clsx from "clsx";
-import { useRouter } from "next/navigation";
+import { useAtomValue, useSetAtom } from "jotai";
+import {
+  getFavoriteTokenAtom,
+  toggleFavoriteTokenAtom,
+} from "@/lib/store/atoms/cookieStorage";
+import { ITokenCore } from "@/lib/services/lifiApi/model";
 type Props = {
-  chainId: number;
-  address: string;
+  token: ITokenCore;
   /**
    * If value is provided, it will be used to determine if the token is favorited.
    * Else, we determine it from the cookies.
@@ -19,37 +19,30 @@ type Props = {
   isFavorite?: boolean;
 };
 
-export default function FavoriteIcon({ chainId, isFavorite, address }: Props) {
+export default function FavoriteIcon({ token, isFavorite }: Props) {
   const mode: "cookie based" | "controlled" =
     typeof isFavorite === "boolean" ? "controlled" : "cookie based";
 
-  let dataSource = !!isFavorite;
-
-  const router = useRouter();
-
-  if (mode === "cookie based") {
-    const isFavoriteFromClientCookie =
-      !!getFavoriteTokensFromClientCookie().find(
-        (token) => token.chainId === chainId && token.tokenAddress === address
-      );
-    dataSource = isFavoriteFromClientCookie;
-  }
-
-  // Optimistic updates
-  const [_, startTransition] = useTransition();
-  const [optimisticIsFavorite, toggleOptimistic] = useOptimistic(
-    dataSource,
-    (state) => !state
+  const favoriteToken = useAtomValue(
+    useMemo(
+      () =>
+        getFavoriteTokenAtom({
+          chainId: token?.chainId,
+          tokenAddress: token?.address,
+        }),
+      [token]
+    )
   );
+
+  const isFavCookieBased = !!favoriteToken;
+  const isFav = mode === "cookie based" ? isFavCookieBased : !!isFavorite;
+
+  const toggleAtom = useSetAtom(toggleFavoriteTokenAtom);
 
   function handleClick(e: MouseEvent<HTMLButtonElement>) {
     e.stopPropagation();
     e.preventDefault(); // If some parent component is a link, we don't want to trigger that;
-    startTransition(() => {
-      toggleOptimistic(undefined); // TS needs an argument here, but we don't use it;
-      toggleFavoriteTokensFromClient({ chainId, tokenAddress: address });
-      router.refresh();
-    });
+    toggleAtom(token);
   }
 
   return (
@@ -57,7 +50,7 @@ export default function FavoriteIcon({ chainId, isFavorite, address }: Props) {
       className={clsx("hover:scale-125 transition-all active:scale-110")}
       onClickCapture={handleClick}
     >
-      {optimisticIsFavorite ? "❤️" : "🤍"}
+      {isFav ? "❤️" : "🤍"}
     </button>
   );
 }
