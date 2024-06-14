@@ -1,54 +1,43 @@
-"use client";
-
-import { useSetQueryParameter } from "@/lib/hooks/useSetQueryParam";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
-import { useEffect, useState } from "react";
 
 type Props = {
   currentPage: number;
   pageCount: number;
+  searchParams?: { [key: string]: string };
 };
 
-export default function Pagination({ currentPage, pageCount }: Props) {
-  const pathName = usePathname();
-  const { getUpdatedQueryParameters } = useSetQueryParameter();
-
-  const [isClient, setIsClient] = useState(false);
-  useEffect(() => {
-    setIsClient(true);
-  }, []);
-
+export default async function Pagination({
+  currentPage,
+  searchParams,
+  pageCount,
+}: Props) {
   const hasNextPage = currentPage < pageCount;
   const hasPrevPage = currentPage > 1;
 
-  const nextPageLink = isClient
-    ? `${pathName}?${getUpdatedQueryParameters(
-        "page",
-        String(currentPage + 1)
-      )}`
-    : "";
-  const prevPageLink = isClient
-    ? `${pathName}?${getUpdatedQueryParameters(
-        "page",
-        String(currentPage - 1)
-      )}`
-    : "";
+  function generatePageLink(page: number) {
+    const newQueryParams = new URLSearchParams(searchParams);
+    newQueryParams.set("page", String(page));
+    return `?${newQueryParams.toString()}`;
+  }
+
+  const nextPageLink = hasNextPage ? generatePageLink(currentPage + 1) : null;
+  const prevPageLink = hasPrevPage ? generatePageLink(currentPage - 1) : null;
 
   return (
     <div className="flex flex-col gap-3 items-center justify-center">
       <div className="flex">
-        {hasPrevPage && (
+        {prevPageLink && (
           <Link
             href={prevPageLink}
+            scroll={false}
             className="bg-white/60 hover:bg-white text-sm sm:text-base transition-all rounded-full shadow-md px-4 py-2  m-2 block"
           >
             Previous Page
           </Link>
         )}
-        {hasNextPage && (
+        {nextPageLink && (
           <Link
-            prefetch
+            scroll={false}
             href={nextPageLink}
             className="bg-white/60 hover:bg-white text-sm sm:text-base transition-all rounded-full shadow-md px-4 py-2  m-2 block"
           >
