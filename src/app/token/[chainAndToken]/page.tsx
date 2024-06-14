@@ -10,8 +10,6 @@ type Props = {
   params: { chainAndToken: string };
 };
 
-export const dynamic = "force-static"; // Ensures ISR (if a fetch uses revalidate inside)
-
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const [chain, token] = params.chainAndToken.split("-");
   const data = await fetchToken({ chain, token }, { next: { revalidate: 20 } });

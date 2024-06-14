@@ -1,8 +1,11 @@
 "use client";
 import { MouseEvent, useOptimistic, useTransition } from "react";
-import { toggleFavoriteToken } from "../actions";
-import { getFavoriteTokensFromClientCookie } from "@/lib/services/favoriteTokenCookies/client";
+import {
+  getFavoriteTokensFromClientCookie,
+  toggleFavoriteTokensFromClient,
+} from "@/lib/services/favoriteTokenCookies/client";
 import clsx from "clsx";
+import { useRouter } from "next/navigation";
 type Props = {
   chainId: number;
   address: string;
@@ -21,6 +24,8 @@ export default function FavoriteIcon({ chainId, isFavorite, address }: Props) {
     typeof isFavorite === "boolean" ? "controlled" : "cookie based";
 
   let dataSource = !!isFavorite;
+
+  const router = useRouter();
 
   if (mode === "cookie based") {
     const isFavoriteFromClientCookie =
@@ -42,7 +47,8 @@ export default function FavoriteIcon({ chainId, isFavorite, address }: Props) {
     e.preventDefault(); // If some parent component is a link, we don't want to trigger that;
     startTransition(() => {
       toggleOptimistic(undefined); // TS needs an argument here, but we don't use it;
-      toggleFavoriteToken({ chainId, tokenAddress: address });
+      toggleFavoriteTokensFromClient({ chainId, tokenAddress: address });
+      router.refresh();
     });
   }
 
