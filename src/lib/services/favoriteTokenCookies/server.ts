@@ -1,5 +1,5 @@
-import { cookies } from "next/headers";
 import "server-only";
+import { cookies } from "next/headers";
 import {
   FAVORITE_TOKENS_KEY,
   FavoriteTokenIdentifier,

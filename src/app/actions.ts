@@ -7,7 +7,9 @@ import {
 } from "@/lib/services/favoriteTokenCookies/server";
 import { revalidatePath } from "next/cache";
 
-export async function toggleFavoriteToken(token: IFavoriteTokenIdentifier) {
+export async function toggleFavoriteTokenAction(
+  token: IFavoriteTokenIdentifier
+) {
   const favoriteTokens = getFavoriteTokensFromServerCookie();
 
   const index = favoriteTokens.findIndex(
@@ -17,6 +19,7 @@ export async function toggleFavoriteToken(token: IFavoriteTokenIdentifier) {
   );
 
   const notFound = index === -1;
+
   if (notFound) {
     setFavoriteTokenCookie([...favoriteTokens, token]);
   } else {

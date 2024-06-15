@@ -5,6 +5,8 @@ import clsx from "clsx";
 import Header from "./components/Header";
 import Footer from "./components/Footer";
 import { ReactNode } from "react";
+import { Provider } from "jotai";
+import { OptimisticFavoriteTokensProvider } from "./components/OptimisticFavoriteTokensProvider";
 
 const montserrat = Montserrat({ subsets: ["latin"] });
 
@@ -20,16 +22,20 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body
-        className={clsx(
-          montserrat.className,
-          "min-h-screen flex  flex-col bg-gradient-to-br from-yellow-200 to-yellow-50"
-        )}
-      >
-        <Header />
-        {children}
-        <Footer />
-      </body>
+      <Provider>
+        <OptimisticFavoriteTokensProvider />
+
+        <body
+          className={clsx(
+            montserrat.className,
+            "min-h-screen flex  flex-col bg-gradient-to-br from-yellow-200 to-yellow-50"
+          )}
+        >
+          <Header />
+          {children}
+          <Footer />
+        </body>
+      </Provider>
     </html>
   );
 }

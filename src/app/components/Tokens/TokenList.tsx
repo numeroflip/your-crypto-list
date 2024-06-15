@@ -1,7 +1,7 @@
 import Pagination from "../Pagination";
 import { Skeleton } from "../Skeleton";
-import TokenListItem from "./TokenListItem";
 import { getTokens } from "@/lib/services/lifiApi/tokens";
+import TokenListItem from "./TokenListItem";
 
 type Props = {
   query?: string;
@@ -20,6 +20,7 @@ export default async function TokenList({ query, page }: Props) {
           </li>
         ))}
       </ul>
+
       <div className="h-[4px] rounded-md shadow-md bg-white w-full mb-4" />
       <Pagination
         searchParams={query ? { query } : undefined}
