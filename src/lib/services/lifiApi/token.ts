@@ -24,6 +24,7 @@ export async function fetchToken(
     );
 
     const tokenResponse = Token.parse(response);
+
     return tokenResponse;
   } catch (err) {
     console.error(err);

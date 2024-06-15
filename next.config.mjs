@@ -8,6 +8,11 @@ const nextConfig = {
 
         },
       },
+      experimental: {
+        swcPlugins: [
+          ['@swc-jotai/debug-label', { atomNames: ['customAtom'] }],
+        ],
+      },
 };
 
 export default nextConfig;

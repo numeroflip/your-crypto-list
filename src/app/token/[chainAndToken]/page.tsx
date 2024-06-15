@@ -1,3 +1,4 @@
+import FavoriteIcon from "@/app/components/FavoriteIcon";
 import { getChain } from "@/lib/services/lifiApi/chains";
 import { fetchToken } from "@/lib/services/lifiApi/token";
 import { formatPrice } from "@/lib/utils/numberUtils";
@@ -8,8 +9,6 @@ import { notFound } from "next/navigation";
 type Props = {
   params: { chainAndToken: string };
 };
-
-export const dynamic = "force-static"; // Ensures ISR (if a fetch uses revalidate inside)
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const [chain, token] = params.chainAndToken.split("-");
@@ -45,7 +44,7 @@ export default async function Token({ params }: Props) {
   return (
     <main className="flex px-3 max-w-screen-sm self-center w-full flex-col items-center justify-start grow gap-5   pt-10">
       <div className="grid w-full grid-cols-[auto_1fr] gap-5">
-        <div
+        <section
           className={clsx(
             containerClasses,
             "grid grid-cols-subgrid col-span-2 font-semibold "
@@ -56,6 +55,9 @@ export default async function Token({ params }: Props) {
               <img alt="logo" className="size-14 " src={token.logoURI} />
             )}
             <div>{token.name}</div>
+            <div className="ml-auto relative -top-2">
+              <FavoriteIcon token={token} />
+            </div>
           </h1>
           <div className="text-slate-600  self-end ml-2 font-semibold ">
             {token.symbol}
@@ -63,7 +65,8 @@ export default async function Token({ params }: Props) {
           <div className="text-green-600 justify-self-end font-bold text-3xl">
             {formatPrice(Number(token.priceUSD))}
           </div>
-        </div>
+        </section>
+
         <dl
           className={clsx(
             containerClasses,

@@ -1,1 +1,3 @@
-// The place to define the shared or common types used across the project
+export type WithFavoriteData<T> = T & {
+  isFavorite?: boolean;
+};

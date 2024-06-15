@@ -7,7 +7,7 @@ const DEFAULT_OPTIONS: RequestInit = {
 };
 
 /**
- * Fetches data from the specified URL. It's a wrapper around the `fetch` function, we just disable the aggressive caching by NextJs 14, by makin it opt-in.
+ * Fetches data from the specified URL. It's a wrapper around the `fetch` function, we just disable the aggressive caching by NextJs 14, by makin it opt-in, instead of opt-out.
  * Note: NextJs 15 will have this behavior by default, so it might be removed in the future
  *
  * @param {string} url - The URL to fetch data from.

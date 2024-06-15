@@ -1,15 +1,14 @@
-import { z } from "zod";
 import "server-only";
-import { ITokenCore, TokenCore } from "./model";
+import { z } from "zod";
+import { ITokenCore, TOKEN_ITEMS_PER_PAGE, TokenCore } from "./model";
 import { appFetch } from "@/lib/utils/appFetch";
 import Fuse from "fuse.js";
 import { paginate, Paginated } from "@/lib/utils/paginate";
 import { appCache } from "../nodeCache";
+import { getFavoriteTokensFromServerCookie } from "../favoriteTokenCookies/server";
+import { WithFavoriteData } from "@/lib/types";
 const URL = "https://li.quest/v1/tokens";
 
-const DESKTOP_ROW_COUNT = 4;
-
-export const TOKEN_ITEMS_PER_PAGE = DESKTOP_ROW_COUNT * 10;
 const TOKEN_LIST_CACHE_KEY = "allTokens";
 
 interface Options {
@@ -21,9 +20,9 @@ interface Options {
  * Get paginated tokens with support for searching
  */
 export async function getTokens({ query, page }: Options = {}): Promise<
-  Paginated<ITokenCore>
+  Paginated<WithFavoriteData<ITokenCore>>
 > {
-  let tokens = await getAllTokens();
+  let tokens: WithFavoriteData<ITokenCore>[] = await getAllTokens();
 
   // Search
   if (query) {
@@ -32,9 +31,24 @@ export async function getTokens({ query, page }: Options = {}): Promise<
       threshold: 0.4,
     });
     const searchResult = fuse.search(query);
-
     tokens = searchResult.map((result) => result.item);
   }
+
+  // Mark Favorites
+  const favoriteTokenIdentifiers = getFavoriteTokensFromServerCookie();
+
+  tokens = tokens.map((token) => {
+    const isFavorite = favoriteTokenIdentifiers.some(
+      (favorite) =>
+        token.chainId === favorite.chainId &&
+        token.address === favorite.tokenAddress
+    );
+
+    return {
+      ...token,
+      isFavorite,
+    };
+  });
 
   // Paginate
   const paginatedResults = paginate({
@@ -46,12 +60,34 @@ export async function getTokens({ query, page }: Options = {}): Promise<
   return paginatedResults;
 }
 
+export async function getFavoriteTokens(): Promise<ITokenCore[]> {
+  const favoriteTokenIdentifiers = getFavoriteTokensFromServerCookie();
+
+  if (!favoriteTokenIdentifiers.length) {
+    return [];
+  }
+
+  const tokens = await getAllTokens();
+
+  const favoriteTokens = favoriteTokenIdentifiers
+    .map((favorite) =>
+      tokens.find(
+        (token) =>
+          token.chainId === favorite.chainId &&
+          token.address === favorite.tokenAddress
+      )
+    )
+    .filter(Boolean) as ITokenCore[]; // Type assertion, because TS can't infer yet that we removed undefined items
+
+  return favoriteTokens;
+}
+
 /**
  * Fetch, or get the cached list of tokens.
  * The list itself is cached by node-cache, because right now NextJs does not support caching  over 2MB of data.
  * Caching is important, so we don't fetch the list again for search and pagination.
  */
-async function getAllTokens(): Promise<ITokenCore[]> {
+export async function getAllTokens(): Promise<ITokenCore[]> {
   const cachedTokens = appCache.get(TOKEN_LIST_CACHE_KEY) as ITokenCore[];
   let fetchedTokens: ITokenCore[] | null = null;
 

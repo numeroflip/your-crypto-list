@@ -1,6 +1,10 @@
 import clsx from "clsx";
 import { HTMLAttributes } from "react";
 
+
+/**
+ * Placeholder component for loading states
+ */
 export function Skeleton({
   className,
   ...props
@@ -8,7 +12,7 @@ export function Skeleton({
   return (
     <div
       className={clsx(
-        " rounded-md shadow-md bg-white/80 animate-pulse",
+        " rounded-2xl shadow-md bg-white/60 animate-pulse",
         className
       )}
       {...props}
