@@ -44,11 +44,11 @@ Also, I noticed that the Token list has a huge payload, over 2MB, and NextJs won
 
 #### Overview Page
 
-It's mostly SSR, since the pagination and the search is handled on the server, to keep the client bundle and the JS overhead minimal
+It's mostly SSR, since the pagination and the search is handled on the server, to keep the client bundle and the JS overhead minimal.
 
 ##### Search
 
-To keep the app lightweight and minimize client JS, the search feature will be handled server side. The downside is, that the server will need to do some extra work, and the results will come somewhat slower, compared if we did this in client side.
+To keep the app lightweight and minimize client JS, the search feature will be handled server side. The downside is, that the server will need to do some extra work, and the results will come somewhat slower, compared if we did this in client side. Pro: the client side can be much-much lighter.
 
 I choose `Fuse.js` for fuzzy search, as it's a popular library for this usecase
 
@@ -65,3 +65,22 @@ To remedy that it might be worth considering to change it to dynamic rendering, 
 This would make page transitions appear faster.
 
 Either that, or prebuild a limited selection of the most popular tokens, so they are faster initially. Currently the API won't allow that, since it sends a "Too Many Request" error when attempting to pregenerate multiple token detail pages.
+
+### Image optimization
+
+There is no optimization in place, because we don't know the possible sources of the images, and they would need to be configured.
+
+## Favorites
+
+For performance reasons, I opted for a cookie-based favorite system instead of a localstorage based one. This way we know the favorites at request time, so we can send just the displayed tokens from the server.
+Using Next's server actions for that, and some optimistic UI for toggling the hearths.
+
+Pros: Very good performance scores, very little impact.
+
+Cons: For snappy performance we would need to set up optimistic updates for every related component. Right now, adding and removing favorites has a little delay because of that.
+
+### Alternative solutions
+
+Opting for a localstorage based solution, would have some cons. - We would know the user's favorites much later, when the JS runs on the client
+-> longer loading states, worse performance
+-> we would need to either: - Send all the token data from the server, to make sure we know up all the necessary data about the displayed favorites - Request from the client the data of the selected favorite tokens -> more delay -> very bad for layout shift and largest contentful paint metrics

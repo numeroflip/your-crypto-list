@@ -1,5 +1,13 @@
 import { z } from "zod";
 
+/**
+ * How many rows are in a desktop viewport on the token list overview
+ */
+const DESKTOP_COLUMN_COUNT = 4;
+const DESKTOP_ROW_COUNT = 8;
+
+export const TOKEN_ITEMS_PER_PAGE = DESKTOP_COLUMN_COUNT * DESKTOP_ROW_COUNT;
+
 export const Token = z.object({
   chainId: z.number(),
   address: z.string(),
